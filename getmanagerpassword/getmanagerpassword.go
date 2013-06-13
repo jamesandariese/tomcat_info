@@ -14,6 +14,7 @@ func main() {
 		err := easy_error.Apply(recover())
 		if err != nil {
 			fmt.Println(err)
+			os.Exit(2)
 		}
 	}()
 	flag.Parse()
