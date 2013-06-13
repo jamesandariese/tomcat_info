@@ -5,6 +5,7 @@ import (
 	"github.com/jamesandariese/tomcat_info"
 	"github.com/jamesandariese/easy_error"
 	"flag"
+	"os"
 )
 
 var serverdir = flag.String("d", ".", "Path to server (conf/server.xml should exist in this dir)")
@@ -13,6 +14,7 @@ func main() {
 		err := easy_error.Apply(recover())
 		if err != nil {
 			fmt.Println(err)
+			os.Exit(1)
 		}
 	}()
 	flag.Parse()
