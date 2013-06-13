@@ -1,4 +1,4 @@
-package apache_info
+package tomcat_info
 
 import (
 	"encoding/xml"

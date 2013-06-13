@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jamesandariese/apache_info"
+	"github.com/jamesandariese/tomcat_info"
 	"flag"
 )
 
