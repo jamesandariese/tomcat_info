@@ -77,17 +77,12 @@ type Server struct {
 	Listeners []Listener `xml:"Listener"`
 	GlobalNamingResources GlobalNamingResources `xml:"GlobalNamingResources"`
 	Services []Service `xml:"Service"`
+
+	serverpath string // this is the path given to the reader.
 }
 
 var ErrServerHasNoPort = errors.New("No port is defined for HTTP/1.1")
-func GetServerHttpPort(xmlpath string) (port int16, err error) {
-	defer func() {
-		err = easy_error.Apply(recover())
-	}()
-	file := easy_error.Wrap(os.Open(xmlpath)).(*os.File)
-	decoder := xml.NewDecoder(file)
-	server := &Server{}
-	decoder.Decode(server)
+func (server *Server) GetHttpPort() (port int16, err error) {
 	for _, service := range(server.Services) {
 		for _, connector := range(service.Connectors) {
 			switch connector.Protocol {
@@ -98,5 +93,29 @@ func GetServerHttpPort(xmlpath string) (port int16, err error) {
 		}
 	}
 	err = ErrServerHasNoPort
+	return
+}
+
+var ErrServerHasNoUserFile = errors.New("No user file is defined")
+func (server *Server) GetUserFile() (path string, err error) {
+	for _, v := range(server.GlobalNamingResources.Resources) {
+		if v.Name == "UserDatabase" {
+			path = v.Pathname
+			return
+		}
+	}
+	err = ErrServerHasNoUserFile
+	return
+}
+
+func ReadServer(serverpath string) (server *Server, err error) {
+	defer func() {
+		err = easy_error.Apply(recover())
+	}()
+	file := easy_error.Wrap(os.Open(serverpath + "/conf/server.xml")).(*os.File)
+	decoder := xml.NewDecoder(file)
+	server = &Server{}
+	server.serverpath = serverpath
+	decoder.Decode(server)
 	return
 }
